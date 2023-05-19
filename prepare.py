@@ -117,3 +117,61 @@ def scaled_df2(train, validate, test):
     X_test_scaled = pd.DataFrame(X_test_scaled,columns=X_test.columns, index=X_test.index)
     
     return X_train_scaled, X_validate_scaled, X_test_scaled, y_train, y_validate, y_test
+
+#set summarize function
+def summarize(df):
+    '''
+    summarize will take in a single argument (a pandas dataframe) 
+    and output to console various statistics on said dataframe, including:
+    # .head()
+    # .info()
+    # .describe()
+    # .value_counts()
+    # observation of nulls in the dataframe
+    #distrinution of numerical attributes
+    '''
+    print(f"""SUMMARY REPORT
+=====================================================
+          
+          
+Dataframe head: 
+{df.head(3)}
+          
+=====================================================
+          
+          
+Dataframe info: """)
+    df.info()
+
+    print(f"""=====================================================
+          
+          
+Dataframe Description: 
+{df.describe().T}
+          
+=====================================================
+
+
+nulls in dataframe by column: 
+{nulls_by_col(df)}
+=====================================================
+
+
+nulls in dataframe by row: 
+{nulls_by_row(df)}
+=====================================================
+    
+    
+DataFrame value counts: 
+ """)         
+    for col in (get_object_cols(df)): 
+        print(f"""******** {col.upper()} - Value Counts:
+{df[col].value_counts()}
+    _______________________________________""")                   
+        
+# fig, axes = plt.subplots(1, len(get_numeric_cols(df)), figsize=(15, 5))
+    
+    for col in get_numeric_cols(df):
+        sns.histplot(df[col])
+        plt.title(f'Histogram of {col}')
+        plt.show()  
