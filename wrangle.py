@@ -321,3 +321,25 @@ def remove_outliers(df, exclude_columns=None):
     summary.rename(columns={'index': 'Column'}, inplace=True)
 
     return df_clean, summary
+
+# Compute the mean(logerror) by zipcode
+#zipcode_means = df.groupby('regionidzip')['logerror'].mean()
+
+# Compute the overall mean(logerror)
+#overall_mean = df['logerror'].mean()
+
+# Perform t-tests for each zipcode against the overall mean
+#significant_zipcodes = []
+#alpha = 0.05  # significance level
+
+#for zipcode, mean in zipcode_means.items():
+   # t_stat, p_value = stats.ttest_1samp(df[df['regionidzip'] == zipcode]['logerror'], overall_mean)
+   # if p_value < alpha:
+   #     significant_zipcodes.append(zipcode)
+
+# Output the results
+#print("Mean(logerror) by regionidzip:")
+#print(zipcode_means)
+#print("\nOverall mean(logerror):", overall_mean)
+#print("\nSignificant zip codes with errors different from expected:")
+#print(significant_zipcodes)

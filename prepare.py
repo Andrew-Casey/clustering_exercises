@@ -175,3 +175,118 @@ DataFrame value counts:
         sns.histplot(df[col])
         plt.title(f'Histogram of {col}')
         plt.show()  
+
+def prep_mall(df):
+    '''
+    dummy var for gender into is_male
+    split on target of 'spending_score'
+    scale age and annual income. 
+    '''
+    df['is_male'] = pd.get_dummies(df['gender'], drop_first=True)['Male']
+    train, validate, test = train_validate_test_split(df, target='spending_score', seed=1349)
+    train, validate, test = scale_my_data(train, validate, test)
+    
+    print(f'df: {df.shape}')
+    print()
+    print(f'train: {train.shape}')
+    print(f'validate: {validate.shape}')
+    print(f'test: {test.shape}')
+    return df, train, validate, test
+
+    
+def train_validate_test_split2(df, seed=59):
+    '''
+    accepts dataframe and splits the data into train, validate and test 
+    '''
+    train_validate, test = train_test_split(df, test_size=0.2, random_state=seed)
+    
+    train, validate = train_test_split(train_validate, test_size=0.25, random_state=seed)
+    return train, validate, test
+
+def scale_my_data2(train, validate, test):
+    '''
+    scale my data using minmaxscaler and add it back to my input datasets
+    '''
+    scaler = MinMaxScaler()
+    scaler.fit(train[['age', 'annual_income', 'spending_score']])
+    
+    X_train_scaled = scaler.transform(train[['age', 'annual_income','spending_score']])
+    X_validate_scaled = scaler.transform(validate[['age', 'annual_income','spending_score']])
+    X_test_scaled = scaler.transform(test[['age', 'annual_income','spending_score']])
+
+    train[['age_scaled', 'annual_income_scaled','spending_score_scaled']] = X_train_scaled
+    validate[['age_scaled', 'annual_income_scaled','spending_score_scaled']] = X_validate_scaled
+    test[['age_scaled', 'annual_income_scaled','spending_score_scaled']] = X_test_scaled
+    return train, validate, test
+
+def prep_mall(df):
+    '''
+    dummy var for gender into is_male
+    split on target of 'spending_score'
+    scale age and annual income. 
+    '''
+    df['is_male'] = pd.get_dummies(df['gender'], drop_first=True)['Male']
+    train, validate, test = train_validate_test_split2(df, seed=59)
+    train, validate, test = scale_my_data2(train, validate, test)
+    
+    print(f'df: {df.shape}')
+    print()
+    print(f'train: {train.shape}')
+    print(f'validate: {validate.shape}')
+    print(f'test: {test.shape}')
+    return df, train, validate, test
+
+def nulls_by_col(df):
+    """
+    This function will:
+        - take in a dataframe
+        - assign a variable to a Series of total row nulls for ea/column
+        - assign a variable to find the percent of rows w/nulls
+        - output a df of the two variables.
+    """
+    num_missing = df.isnull().sum()
+    pct_miss = (num_missing / df.shape[0]) * 100
+    cols_missing = pd.DataFrame({
+                    'num_rows_missing': num_missing,
+                    'percent_rows_missing': pct_miss
+                    })
+    
+    return  cols_missing
+
+def nulls_by_row(df, index_id = 'customer_id'):
+    """
+    """
+    num_missing = df.isnull().sum(axis=1)
+    pct_miss = (num_missing / df.shape[1]) * 100
+    
+    rows_missing = pd.DataFrame({
+                    'num_cols_missing': num_missing,
+                    'percent_cols_missing': pct_miss
+                    })
+    rows_missing = df.merge(rows_missing, 
+                        left_index=True,
+                        right_index=True).reset_index()[['customer_id', 'num_cols_missing','percent_cols_missing']]
+    
+    return rows_missing.sort_values(by='num_cols_missing', ascending=False)
+
+def get_object_cols(df):
+    '''
+    This function takes in a dataframe and identifies the columns that are object types
+    and returns a list of those column names. 
+    '''
+    # get a list of the column names that are objects (from the mask)
+    object_cols = df.select_dtypes(include=['object', 'category']).columns.tolist()
+    
+    return object_cols
+
+
+
+def get_numeric_cols(df):
+    '''
+    This function takes in a dataframe and identifies the columns that are object types
+    and returns a list of those column names. 
+    '''
+    # get a list of the column names that are objects (from the mask)
+    num_cols = df.select_dtypes(exclude=['object', 'category']).columns.tolist()
+    
+    return num_cols

@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from pydataset import data
 import os
-import env
+import env as e
 
 def check_file_exists(fn, query, url):
     """
@@ -145,3 +145,22 @@ def get_zillow3():
     df = check_file_exists(filename, query, url)
 
     return df
+
+def get_mallcustomer_data():
+    """
+    This function will:
+        - read the given `sql_query`
+        - from the connection made to the `mall_customers` DB
+            - using the `get_connection_url` from my wrangle module.
+            
+        - output a df with the mall `customer_id` set as it's index
+                - `customer_id` is the table's PK. 
+                    This id is an attribute of the table but will not be used as a feature to investigate.
+    """
+    
+    sql_query = 'SELECT * FROM customers;'
+    url = e.get_db_url('mall_customers')
+    
+    df = pd.read_sql(sql_query, url)
+    
+    return df.set_index('customer_id')
